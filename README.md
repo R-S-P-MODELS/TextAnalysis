@@ -12,3 +12,4 @@ to run this app if you have already R and its related dependencies you can use
  
  shiny::runGitHub(repo="TextAnalysis",username="R-S-P-MODELS")
 
+You may also clone the repository and use docker to build a docker image
