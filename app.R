@@ -21,10 +21,10 @@ ui <- fluidPage(
    # Sidebar with a slider input for number of bins 
    sidebarLayout(
       sidebarPanel(
-        fileInput("file1", "Insira o arquivo PDF a ser analisado.csv",
+        fileInput("file1", "Insira o arquivo PDF a ser analisado",
                   accept = c(
                     "text/pdf",".pdf") ),
-        fileInput("file2", "Insira o arquivo PDF a ser analisado.csv",
+        fileInput("file2", "Insira o arquivo PDF a ser analisado",
                   accept = c(
                     "text/pdf",".pdf") ),
          sliderInput("Palavras",
@@ -57,8 +57,11 @@ ui <- fluidPage(
          
          
          
-        )
+        ),
+        h3("Aplicativo Desenvolvido por Rafael Silva Pereira"),
+     h4("Entre em contato por r.s.p.models@gmail.com")
       )
+     
    )
 )
 
