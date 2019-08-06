@@ -239,6 +239,20 @@ return(vec)
 }
 
 
+OptimumClustering<-function(matrix,kmin,kmax){
+  vec=c()
+  require(cluster)
+  for(i in kmin:kmax){
+    set.seed(100)
+    clustercriado=kmeans(matrix,i)
+    vec[i-kmin+1]=mean(silhouette(clustercriado$cluster,matrix)[,3])
+  }
+  Otimo=min(which(vec==max(vec)) ) + kmin
+  set.seed(100)
+ # return(Otimo)
+  return(kmeans(matrix,Otimo))
+}
+
 BestCluster=function(DistanceMatrix,MaxCluster){
 require(cluster)
 d=DistanceMatrix

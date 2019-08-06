@@ -6,6 +6,9 @@
 #
 #    http://shiny.rstudio.com/
 #
+
+
+
 require(plotly)
 library(shiny)
 source("Analise_texto.R")
@@ -21,10 +24,10 @@ ui <- fluidPage(
    # Sidebar with a slider input for number of bins 
    sidebarLayout(
       sidebarPanel(
-        fileInput("file1", "Insira o arquivo PDF a ser analisado",
+        fileInput("file1", "Insira o arquivo PDF a ser analisado.csv",
                   accept = c(
                     "text/pdf",".pdf") ),
-        fileInput("file2", "Insira o arquivo PDF a ser analisado",
+        fileInput("file2", "Insira o arquivo PDF a ser analisado.csv",
                   accept = c(
                     "text/pdf",".pdf") ),
          sliderInput("Palavras",
@@ -58,10 +61,11 @@ ui <- fluidPage(
          
          
         ),
-        h3("Aplicativo Desenvolvido por Rafael Silva Pereira"),
-     h4("Entre em contato por r.s.p.models@gmail.com")
+        h3("Aplicativo desenvolvido por Rafael Silva Pereira!\n\n"),
+        h4("Em caso de duvidas ou problemas favor entrar em contato\n\n"),
+        h4("Para gerar o grafico a primeira vez clique para completar o dataset, não será nescessario para futuras explorações\n\n"),
+        h4("r.s.p.models@gmail.com")
       )
-     
    )
 )
 
@@ -84,7 +88,7 @@ server <- function(input, output) {
   
   Clusterizacao=eventReactive(c(input$linguagens,input$Palavras,input$file1$datapath,input$escolhas),{
     d=Calculo()
-    z=BestCluster(Calculo(),20)
+    z=OptimumClustering(Calculo(),2,20)
     return(z)
   })
   
@@ -234,7 +238,7 @@ server <- function(input, output) {
    
    Clusterizacao2=eventReactive(c(input$linguagens,input$Palavras,input$file1$datapath,input$escolhas),{
      d=Calculo2()
-     z=BestCluster(Calculo2(),20)
+     z=OptimumClustering(Calculo2(),2,20)
      return(z)
    })
    
