@@ -12,6 +12,7 @@
 require(plotly)
 library(shiny)
 source("Analise_texto.R")
+source("WorldCloud.R")
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   tags$style(type="text/css",
@@ -50,12 +51,15 @@ ui <- fluidPage(
          tabPanel("DistanceMatrix2",plotlyOutput("distPlot2")),
          tabPanel("cluster",plotOutput("Saida")),
          tabPanel("cluster2",plotOutput("Saida2")),
+         tabPanel("WordCloud1",plotOutput("Nuvem1")),
+         tabPanel("WordCloud2",plotOutput("Nuvem2")),
          tabPanel("Analysis",verbatimTextOutput("Informacoes"),tableOutput('Tabela')),
          tabPanel("Analysis2",verbatimTextOutput("Informacoes2"),tableOutput('Tabela2')),
          tabPanel("TableGraph",plotlyOutput("TableGraph")),
          tabPanel("TableGraph2",plotlyOutput("TableGraph2")),
          tabPanel("DistanceMatrixComp",plotlyOutput("DistanceGraphComparative")),
-         tabPanel("TableGraphComp",plotlyOutput("TableGraphComparative"))
+         tabPanel("TableGraphComp",plotlyOutput("TableGraphComparative")),
+         tabPanel("WordCloudComp",plotOutput("WordCloudComp"))
          
          
          
@@ -445,6 +449,49 @@ server <- function(input, output) {
        
      }})
    
+   output$Nuvem1<-renderPlot({
+     if(!is.null(input$file1)){
+       
+     #Pergunta<-1
+     a=leitura(input$file1$datapath)
+     Pergunta=Palavras(a,input$linguagens)
+     Pergunta=Pergunta[which(nchar(Pergunta)>3)]
+    # Pergunta<-GetTwitter()
+     NuvemPalavras(tolower(Pergunta),input$Linguagem)
+     }
+       
+     
+   })
+   
+   output$Nuvem2<-renderPlot({
+     if(!is.null(input$file2)){
+       
+       #Pergunta<-1
+       a=leitura(input$file2$datapath)
+       Pergunta=Palavras(a,input$linguagens)
+       Pergunta=Pergunta[which(nchar(Pergunta)>3)]
+     #  Pergunta<-GetTwitter()
+       NuvemPalavras(tolower(Pergunta),input$Linguagem)
+     }
+     
+     
+   })
+   
+   output$WordCloudComp<-renderPlot({
+     if(!is.null(input$file2) & !is.null(input$file1)  ){
+       a=leitura(input$file1$datapath)
+       Pergunta=Palavras(a,input$linguagens)
+       Pergunta=Pergunta[which(nchar(Pergunta)>3)]
+       b=leitura(input$file2$datapath)
+       Pergunta2=Palavras(b,input$linguagens)
+       Pergunta2=Pergunta2[which(nchar(Pergunta2)>3)]
+       NuvemComparativa(tolower(Pergunta),tolower(Pergunta2),input$linguagens)
+       
+     }
+     
+     
+     
+   })
    
 }
 
