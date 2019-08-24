@@ -25,6 +25,7 @@ RUN R -e "install.packages(c('shiny', 'rmarkdown'), repos='https://cloud.r-proje
 # install dependencies of the Analysis app
 RUN R -e "install.packages(c('pdftools','plotly','fields','reshape2','cluster','tm'), repos='https://cloud.r-project.org/',dependencies=TRUE)"
 
+RUN R -e "install.packages(c('tm', 'SnowballC','wordcloud','RColorBrewer'), repos='https://cloud.r-project.org/',dependencies=TRUE)"
 # copy the app to the image
 #RUN mkdir /root/Exploration
 #COPY APPLastVersion.R /root/Exploration
@@ -32,6 +33,7 @@ RUN R -e "install.packages(c('pdftools','plotly','fields','reshape2','cluster','
 #COPY Rprofile.site /usr/lib/R/etc/
 COPY app.R  app.R
 COPY Analise_texto.R Analise_texto.R
+COPY WorldCloud.R WorldCloud.R
 EXPOSE 3838
 
 CMD ["R", "-e", "shiny::runApp('app.R',port=3838,host='0.0.0.0',launch.browser=FALSE)"]
