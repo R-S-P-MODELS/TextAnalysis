@@ -38,6 +38,11 @@ ui <- fluidPage(
                      value = 5),
         selectInput(inputId = "linguagens",label = "Lingua do PDF",choices = c("en","pt")),
         selectInput("escolhas",label = "Métrica",choices = c("Media","Desvio Padrao","Ambos")),
+        conditionalPanel(
+          condition = "input.Referenciador == Ngram ||input.Referenciador == Ngram2",
+          numericInput("Ngram",label = "Tamanho do Ngram",value=2),numericInput("Amount",label = "Numero de ngrams",value=5) ),
+        #Ngram
+        #Amount
         tabsetPanel(
         #  tabPanel("Analysys",selectInput("selecionador",choices = 1:13,label="Cluster"))
           tabPanel("Analysys",uiOutput("selecionador"))
@@ -57,6 +62,8 @@ ui <- fluidPage(
          tabPanel("Analysis2",verbatimTextOutput("Informacoes2"),tableOutput('Tabela2')),
          tabPanel("TableGraph",plotlyOutput("TableGraph")),
          tabPanel("TableGraph2",plotlyOutput("TableGraph2")),
+         tabPanel("Ngram",plotlyOutput("NgramGraph")),
+         tabPanel("Ngram2",plotlyOutput("NgramGraph2")),
          tabPanel("DistanceMatrixComp",plotlyOutput("DistanceGraphComparative")),
          tabPanel("TableGraphComp",plotlyOutput("TableGraphComparative")),
          tabPanel("WordCloudComp",plotOutput("WordCloudComp"))
@@ -78,7 +85,7 @@ ui <- fluidPage(
 server <- function(input, output) {
   options(shiny.maxRequestSize=1000*1024^2)
   
-  Calculo=reactive({
+  Calculo=eventReactive(c(input$Palavras,input$escolhas),{
     if(!is.null(input$file1)){
       if(input$escolhas=="Media")
         d=DistanceMatrix(caminho=input$file1$datapath,reject=input$Palavras,method="media",linguagem=input$linguagens)
@@ -114,7 +121,8 @@ server <- function(input, output) {
           z=Clusterizacao2()
           selectInput("selecionador",choices = 1:max(as.numeric(z$cluster)),label="Cluster")
         }
-        else
+        
+        else if(input$Referenciador=="DistanceMatrixComp" |input$Referenciador=="TableGraphComp" )
         {
           z=Clusterizacao()
           z1=Clusterizacao2()
@@ -228,7 +236,7 @@ server <- function(input, output) {
    
    ### copy for second file
    
-   Calculo2=reactive({
+   Calculo2=eventReactive(c(input$Palavras,input$escolhas), {
      if(!is.null(input$file2)){
        if(input$escolhas=="Media")
          d=DistanceMatrix(caminho=input$file2$datapath,reject=input$Palavras,method="media",linguagem=input$linguagens)
@@ -493,6 +501,22 @@ server <- function(input, output) {
      
      
    })
+   
+   output$NgramGraph<-renderPlotly({
+     if(!is.null(input$file1)){
+      a=leitura(input$file1$datapath)
+      source("Ngrams.R")
+      p<-GerarGraficoNGram(a,input$Ngram,input$linguagens,input$Amount)
+     }
+   } )
+   
+   output$NgramGraph2<-renderPlotly({
+     if(!is.null(input$file2)){
+       a=leitura(input$file2$datapath)
+       source("Ngrams.R")
+       p<-GerarGraficoNGram(a,input$Ngram,input$linguagens,input$Amount)
+     }
+   } )
    
 }
 
