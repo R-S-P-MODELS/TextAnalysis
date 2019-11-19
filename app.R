@@ -25,17 +25,17 @@ ui <- fluidPage(
    # Sidebar with a slider input for number of bins 
    sidebarLayout(
       sidebarPanel(
-        fileInput("file1", "Insira o arquivo PDF a ser analisado.csv",
+        fileInput("file1", "Insira o arquivo PDF a ser analisado",
                   accept = c(
                     "text/pdf",".pdf") ),
-        fileInput("file2", "Insira o arquivo PDF a ser analisado.csv",
+        fileInput("file2", "Insira o arquivo PDF a ser analisado",
                   accept = c(
                     "text/pdf",".pdf") ),
          sliderInput("Palavras",
                      "Palavras de frequencia igual ou menor a serem rejeitadas da analise",
                      min = 0,
                      max = 50,
-                     value = 10),
+                     value = 5),
         selectInput(inputId = "linguagens",label = "Lingua do PDF",choices = c("en","pt")),
         selectInput("escolhas",label = "Métrica",choices = c("Media","Desvio Padrao","Ambos")),
         tabsetPanel(
@@ -66,8 +66,9 @@ ui <- fluidPage(
          
         ),
         h3("Aplicativo desenvolvido por Rafael Silva Pereira!\n\n"),
+        h4("Esta aplicação tem como objetivo comparação de conteudos de textos\n\n"),
         h4("Em caso de duvidas ou problemas favor entrar em contato\n\n"),
-        h4("Para gerar o grafico a primeira vez clique para completar o dataset, não será nescessario para futuras explorações\n\n"),
+        
         h4("r.s.p.models@gmail.com")
       )
    )
@@ -92,7 +93,7 @@ server <- function(input, output) {
   
   Clusterizacao=eventReactive(c(input$linguagens,input$Palavras,input$file1$datapath,input$escolhas),{
     d=Calculo()
-    z=OptimumClustering(Calculo(),2,20)
+    z=OptimumClustering(d,2,nrow(d)/2)
     return(z)
   })
   
@@ -242,7 +243,7 @@ server <- function(input, output) {
    
    Clusterizacao2=eventReactive(c(input$linguagens,input$Palavras,input$file1$datapath,input$escolhas),{
      d=Calculo2()
-     z=OptimumClustering(Calculo2(),2,20)
+     z=OptimumClustering(d,2,nrow(d)/2)
      return(z)
    })
    

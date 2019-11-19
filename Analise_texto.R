@@ -8,6 +8,42 @@ doc <- content(document[[1]])
 return(doc)
 }
 
+
+PreProcessWords<-function(texto){
+library("tm")
+library("SnowballC")
+library("wordcloud")
+library("RColorBrewer")
+texto=gsub("/"," ",texto)
+texto=gsub("\\|"," ",texto)
+texto=gsub("@"," ",texto)
+#docs <- Corpus(VectorSource(texto))
+#toSpace <- content_transformer(function (x , pattern ) gsub(pattern, " ", x))
+#docs <- tm_map(docs, toSpace, "/")
+#docs <- tm_map(docs, toSpace, "@")
+#docs <- tm_map(docs, toSpace, "\\|")
+
+# Convert the text to lower case
+#docs <- tm_map(docs, content_transformer(tolower))
+texto=tolower(texto)
+# Remove numbers
+texto=removeNumbers(texto)
+
+# Remove english common stopwords
+#docs <- tm_map(docs, removeWords, stopwords(linguas))
+texto=removePunctuation(texto)
+# Remove punctuations
+#docs <- tm_map(docs, removePunctuation)
+# Eliminate extra white spaces
+#docs <- tm_map(docs, stripWhitespace)
+texto=stripWhitespace(texto)
+texto=texto[texto!=""]
+return(texto)
+
+}
+
+
+
 Palavras=function(texto,linguagem){
 #alvo=strsplit(texto,c(" ","\n"))
 alvo=strsplit(texto, "[\n ]+")
@@ -22,6 +58,9 @@ auxiliarVector=c("\n")
 alvo=alvo[which(!(alvo %in% auxiliarVector))]
 
 #alvo= setdiff(alvo,stopwords(kind="pt"))
+alvo=alvo[nchar(alvo)>3]
+alvo=tolower(alvo)
+alvo=PreProcessWords(alvo)
 
 return(alvo)
 }
@@ -53,6 +92,8 @@ u=u[[1]]
 x=matrix(nrow=length(u),ncol=length(u))
 peso1=1
 peso2=1
+withProgress(message = 'Building Matrix', value = 0, {
+
 for(k in 1:length(u) ){
 	for(i in 1:length(u) ){
 		vec=c()
@@ -80,9 +121,11 @@ for(k in 1:length(u) ){
 			print("metodo invalido")
 			return(0)
 		}
+	       incProgress(1/(length(u)**2), detail = "Calculating Matrix" )
 
 	}
 }
+})
 rownames(x)=nomes
 colnames(x)=nomes
 return(x)
@@ -123,6 +166,8 @@ require(reshape2)
 require(ggplot2)
 require(plotly)
 h1=melt(ly)
+h1$value=abs(h1$value)
+h1$value=h1$value/max(h1$value)
 p1=ggplot(data = h1, aes(x=Var1, y=Var2, fill=value)) + geom_tile() + labs(x="",y=""  ) + theme(axis.title.x=element_blank(),
       axis.text.x=element_blank(),
         axis.ticks.x=element_blank() ,axis.title.y=element_blank(),
@@ -242,13 +287,16 @@ return(vec)
 OptimumClustering<-function(matrix,kmin,kmax){
   vec=c()
   require(cluster)
+withProgress(message = 'Building Matrix', value = 0, {
   for(i in kmin:kmax){
     set.seed(100)
     clustercriado=kmeans(matrix,i)
     vec[i-kmin+1]=mean(silhouette(clustercriado$cluster,matrix)[,3])
+    incProgress(1/(kmax-kmin +1), detail = "Finding Optimum Cluster" )
   }
   Otimo=min(which(vec==max(vec)) ) + kmin
   set.seed(100)
+})
  # return(Otimo)
   return(kmeans(matrix,Otimo))
 }
