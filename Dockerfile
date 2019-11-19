@@ -34,6 +34,7 @@ RUN R -e "install.packages(c('tm', 'SnowballC','wordcloud','RColorBrewer'), repo
 COPY app.R  app.R
 COPY Analise_texto.R Analise_texto.R
 COPY WorldCloud.R WorldCloud.R
+COPY Ngrams.R Ngrams.R
 EXPOSE 3838
 
 CMD ["R", "-e", "shiny::runApp('app.R',port=3838,host='0.0.0.0',launch.browser=FALSE)"]
