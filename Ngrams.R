@@ -1,5 +1,24 @@
+options(warn=-1)
+
+GerarNgram<-function(texto,lingua,ngram){
+source("~/scripts_R/Textos/Analise_texto.R")
+source("~/scripts_R/Textos/PreProcessTexto.R")
+require(tidytext)
+require(dplyr)
+require(ggplot2)
 
 
+
+
+
+Preprocessing=Palavras(texto,lingua)
+Preprocessing=Preprocessing[!(Preprocessing  %in% stop_words$word)]
+Preprocessing=PreProcessWords(Preprocessing)
+frame=data.frame(txt=Preprocessing)
+NGrams=frame %>% unnest_tokens(word, txt, token = "ngrams", n = ngram) 
+NGrams=NGrams %>%count(word, sort = TRUE)
+return(NGrams)
+}
 
 PreProcessWords<-function(texto){
 library("tm")
@@ -31,6 +50,7 @@ texto=removePunctuation(texto)
 texto=stripWhitespace(texto)
 texto=texto[texto!=""]
 texto=texto[texto!=" "]
+#texto=stemDocument(texto)
 return(texto)
 
 }
@@ -66,3 +86,25 @@ slice(1:Quantidade) %>%
 
 
 }
+
+GraphFromWords<-function(texto,lingua,MinFreq){
+  
+  Frame=GerarNgram(texto,lingua,2)
+  
+  aux=data.frame(Reduce(rbind,strsplit(Frame$word,split=" ")),Frame$n)
+  names(aux)=c('term1','term2','cooc')
+  require(igraph)
+  require(ggraph)
+  
+  aux=aux[aux$cooc>=MinFreq,]
+  wordnetwork=graph_from_data_frame(aux)
+  
+  p<-ggraph(wordnetwork, layout = "fr") +
+    geom_edge_link(aes(width = cooc, edge_alpha = cooc), edge_colour = "pink") +
+    geom_node_text(aes(label = name), col = "darkgreen", size = 4) +
+    theme_graph(base_family = "Arial Narrow") +
+    theme(legend.position = "none") 
+  return(list(Viz=p,Graph=aux)  )
+  
+}
+

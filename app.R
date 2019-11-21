@@ -40,7 +40,9 @@ ui <- fluidPage(
         selectInput("escolhas",label = "Métrica",choices = c("Media","Desvio Padrao","Ambos")),
         conditionalPanel(
           condition = "input.Referenciador == Ngram ||input.Referenciador == Ngram2",
-          numericInput("Ngram",label = "Tamanho do Ngram",value=2),numericInput("Amount",label = "Numero de ngrams",value=5) ),
+          numericInput("Ngram",label = "Tamanho do Ngram",value=2),
+          numericInput("Amount",label = "Numero de ngrams",value=5),
+          selectInput("OptionsNgram",label = "Tipo de grafico",choices = c('TopNgrams','Graph') ) ),
         #Ngram
         #Amount
         tabsetPanel(
@@ -62,8 +64,8 @@ ui <- fluidPage(
          tabPanel("Analysis2",verbatimTextOutput("Informacoes2"),tableOutput('Tabela2')),
          tabPanel("TableGraph",plotlyOutput("TableGraph")),
          tabPanel("TableGraph2",plotlyOutput("TableGraph2")),
-         tabPanel("Ngram",plotlyOutput("NgramGraph")),
-         tabPanel("Ngram2",plotlyOutput("NgramGraph2")),
+         tabPanel("Ngram",plotOutput("NgramGraph")),
+         tabPanel("Ngram2",plotOutput("NgramGraph2")),
          tabPanel("DistanceMatrixComp",plotlyOutput("DistanceGraphComparative")),
          tabPanel("TableGraphComp",plotlyOutput("TableGraphComparative")),
          tabPanel("WordCloudComp",plotOutput("WordCloudComp"))
@@ -502,19 +504,29 @@ server <- function(input, output) {
      
    })
    
-   output$NgramGraph<-renderPlotly({
+   output$NgramGraph<-renderPlot({
      if(!is.null(input$file1)){
       a=leitura(input$file1$datapath)
       source("Ngrams.R")
-      p<-GerarGraficoNGram(a,input$Ngram,input$linguagens,input$Amount)
+      if(input$OptionsNgram=='TopNgrams')
+        print(GerarGraficoNGram(a,input$Ngram,input$linguagens,input$Amount) )
+      if(input$OptionsNgram=='Graph'){
+        p<-GraphFromWords(a,input$linguagens,input$Amount)
+        print(p$Viz)
+      }
      }
    } )
    
-   output$NgramGraph2<-renderPlotly({
+   output$NgramGraph2<-renderPlot({
      if(!is.null(input$file2)){
        a=leitura(input$file2$datapath)
        source("Ngrams.R")
-       p<-GerarGraficoNGram(a,input$Ngram,input$linguagens,input$Amount)
+       if(input$OptionsNgram=='TopNgrams')
+         print( GerarGraficoNGram(a,input$Ngram,input$linguagens,input$Amount) )
+       if(input$OptionsNgram=='Graph'){
+         p<-GraphFromWords(a,input$linguagens,input$Amount)
+         print(p$Viz)
+       }
      }
    } )
    

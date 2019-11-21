@@ -27,6 +27,7 @@ RUN R -e "install.packages(c('pdftools','plotly','fields','reshape2','cluster','
 
 RUN R -e "install.packages(c('tm', 'SnowballC','wordcloud','RColorBrewer'), repos='https://cloud.r-project.org/',dependencies=TRUE)"
 RUN R -e "install.packages(c('tidytext','dplyr'), repos='https://cloud.r-project.org/',dependencies=TRUE)"
+RUN R -e "install.packages(c('igraph','ggraph'), repos='https://cloud.r-project.org/',dependencies=TRUE)" 
 
 # copy the app to the image
 #RUN mkdir /root/Exploration
