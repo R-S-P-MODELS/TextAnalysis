@@ -1,8 +1,8 @@
 options(warn=-1)
 
 GerarNgram<-function(texto,lingua,ngram){
-source("~/scripts_R/Textos/Analise_texto.R")
-source("~/scripts_R/Textos/PreProcessTexto.R")
+source("Analise_texto.R")
+#source("PreProcessTexto.R")
 require(tidytext)
 require(dplyr)
 require(ggplot2)
